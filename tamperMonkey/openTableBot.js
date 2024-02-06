@@ -16,6 +16,7 @@
   const maxCheckSeconds = 600000;
   let timeoutId;
   let isBotStarted = false;
+  let isReservation = false;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
@@ -39,24 +40,44 @@
   }
 
   async function checkForTimeSlots() {
-    //click button
-    $("[aria-label='Find a time']").click();
-    //wait for api to return, taking 84ms on average
-    await new Promise((res) => setTimeout(res, 2500));
-    //check for reservation
-    const slots = $("[data-test='time-slots']")[0];
+    //click button available?
+    const clickButton = document.querySelector("[aria-label='Find a time']")
+    if (clickButton) {
+        clickButton.click();
+        //wait for api to return, taking 84ms on average
+        await new Promise((res) => setTimeout(res, 2500));
+        //check for reservation
+        const slots = $("[data-test='time-slots']")[0];
+    
+        for (const child of slots.children) {
+          if (child.firstChild.ariaLabel) {
+            console.log("reservation found!");
+            const message = `Reservation available: ${child.firstChild.ariaLabel}`;
+            sendEmail(message, child.firstChild.href);
+            isReservation = true;
+            isBotStarted = false;
+            break;
+          }
+        }
+    } else {
+        const nextAvailable = document.querySelector("[data-test='multi-day-availability-button']");
+        if (nextAvailable) {
+            nextAvailable.click();
+            await new Promise((res) => setTimeout(res, 2500));
+            const container = document.querySelectorAll("[data-test='multi-day-timeslot-container']");
+            //loop through container to match range within desired date and time
+            for (const bucket of container) {
+                console.log(bucket)
+            }
+            //close modal
+            document.querySelector("[data-test='modal-close']").click();
 
-    let isReservation = false;
-    for (const child of slots.children) {
-      if (child.firstChild.ariaLabel) {
-        console.log("reservation found!");
-        const message = `Reservation available: ${child.firstChild.ariaLabel}`;
-        sendEmail(message, child.firstChild.href);
-        isReservation = true;
-        isBotStarted = false;
-        break;
-      }
+        } else {
+            console.log("page broken")
+            return;
+        }
     }
+    
     if (!isReservation) {
       console.log("no reservation found, try again");
       startCheckingAgain();
