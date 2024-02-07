@@ -4,7 +4,6 @@
 // @version      0.1
 // @description  get your reservation when others cancel
 // @author       Nohren
-// @grant        window.close
 // ==/UserScript==
 
 (function () {
@@ -14,7 +13,6 @@
   const minCheckSeconds = 60000;
   const maxCheckSeconds = 600000;
 
-  let timeoutId;
   let botRunning = false;
 
   function sendEmail(message, href) {
@@ -28,7 +26,7 @@
   }
 
   function startCheckingAgain() {
-    timeoutId = setTimeout(checkForTimeSlots, randomInterval());
+    setTimeout(checkForTimeSlots, randomInterval());
   }
 
   //random check interval to avoid bot detection.
@@ -43,27 +41,29 @@
     //click button available?
     const clickButton = document.querySelector("[aria-label='Find a time']");
     if (clickButton) {
-        clickButton.click();
-        //wait for api to return, taking 84ms on average
-        await new Promise((res) => setTimeout(res, 2900));
-        //check results for reservation
-        const slots = document.querySelector("[data-test='time-slots']");
-        for (const child of slots.children) {
-          if (child.firstChild.ariaLabel) {
-            console.log("Reservation found!");
-            const message = `Reservation available: ${child.firstChild.ariaLabel}`;
-            sendEmail(message, child.firstChild.href);
-            botRunning = false;
-            return;
-          }
+      clickButton.click();
+      //wait for api to return, taking 84ms on average
+      await new Promise((res) => setTimeout(res, 2900));
+      //check results for reservation
+      const slots = document.querySelector("[data-test='time-slots']");
+      for (const child of slots.children) {
+        if (child.firstChild.ariaLabel) {
+          console.log("Reservation found!");
+          const message = `Reservation available: ${child.firstChild.ariaLabel}`;
+          sendEmail(message, child.firstChild.href);
+          botRunning = false;
+          return;
         }
+      }
     } else {
-        console.log("no click button, open in a different browser or clear cookies / cache");
-        botRunning = false;
-        return;
+      console.log(
+        "no click button, open in a different browser or clear cookies / cache"
+      );
+      botRunning = false;
+      return;
     }
 
-    console.log("no reservation found, trying again");
+    console.log("no reservation found, trying again...");
     startCheckingAgain();
   }
 
