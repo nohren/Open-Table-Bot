@@ -6,6 +6,10 @@ A bot that enables last minute OpenTable reservations for hard to get restaurant
 | :----------------------------: | :------------------------------: |
 | ![email](images/IMG_4209.jpeg) | ![success](images/IMG_4210.jpeg) |
 
+|      ⛔ because nope ⛔      |
+| :--------------------------: |
+| ![nope](images/img_nope.png) |
+
 ## Overview
 
 This bot runs in a tab and checks for availability. Once availability appears, it sends a notification via email with the reservation link to the destination address specified.
