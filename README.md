@@ -1,6 +1,6 @@
 # Open-Table-Bot
 
-A bot that enables last minute OpenTable reservations for hard to get restaurants. Let's be real, people often cancel at the last minute. Be a good citizen and help re-allocate the resources.
+A bot that enables last minute OpenTable reservations for hard to get restaurants. A percentage of people will cancel at the last minute. This bot increases the chances those resources will re-allocate to you.
 
 |               🚀               |                🌟                |
 | :----------------------------: | :------------------------------: |
