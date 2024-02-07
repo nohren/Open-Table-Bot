@@ -1,10 +1,14 @@
 # Open-Table-Bot
 
-A bot that notifies you of OpenTable reservation availability for hard to get restaurants. Let's be real, people often cancel at the last minute. Be a good citizen and help re-allocate these resources.
+A bot that enables last minute OpenTable reservations for hard to get restaurants. Let's be real, people often cancel at the last minute. Be a good citizen and help re-allocate these resources.
 
 |               🚀               |                🌟                |
 | :----------------------------: | :------------------------------: |
 | ![email](images/IMG_4209.jpeg) | ![success](images/IMG_4210.jpeg) |
+
+## Overview
+
+This bot runs in a tab and checks for availability. Once availability appears, it sends a notification via email with the reservation link to the destination address specified.
 
 ## Install
 
@@ -20,7 +24,7 @@ CLIENT_SECRET=<client secret>
 CLIENT_ID=<client id>
 ```
 
-- Setting up gmail forwarding
+## Set up gmail forwarding
 
 #### OAuth2
 
@@ -49,4 +53,4 @@ CLIENT_ID=<client id>
 - Navigate to https://www.opentable.com/ and select a date, time and restaurant.
 - Make sure the big red "Find a Time" button is visible. Otherwise clear the cache / cookies until it is.
 - You should see tampermonkey running and a green button in the top left of the browser titled "Start Bot". Click it.
-- You can see it run in the console. Make sure to plug in your laptop and have it never go to sleep while plugged in so you can be out and about and get notified via email on your phone for availabilities / cancellations.
+- You can see it run in the console. Make sure to plug in your laptop and don't let it go to sleep so you can be out and about and get notified via email on your phone for availabilities / cancellations.
