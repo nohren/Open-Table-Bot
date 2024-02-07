@@ -28,7 +28,7 @@ CLIENT_SECRET=<client secret>
 CLIENT_ID=<client id>
 ```
 
-## Set up gmail forwarding
+## Set up gmail permissions for sending via server
 
 #### Server confirmed to run on node LTS.
 
@@ -55,7 +55,7 @@ CLIENT_ID=<client id>
 
 - At the project root, `npm run server`
 - In the browser install tampermonkey extension. You can find it in chrome as an extension.
-- In the project root tampermonkey folder, copy paste the openTableBot.js script as a new tampermonkey script
+- In the project root tampermonkey folder, copy the openTableBot.js script contents and paste it into a new tampermonkey script in the browser extension.
 - Navigate to https://www.opentable.com/ and select a date, time and restaurant.
 - Make sure the big red "Find a Time" button is visible. Otherwise clear the cache / cookies until it is.
 - You should see tampermonkey running and a green button in the top left of the browser titled "Start Bot". Click it.
