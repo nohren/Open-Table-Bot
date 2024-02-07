@@ -12,7 +12,9 @@ A bot that enables last minute OpenTable reservations for hard to get restaurant
 
 ## Overview
 
-This bot runs in a tab and checks for availability. Once availability appears, it sends a notification via email with the reservation link to the destination address specified.
+\*\* Note - When logging in it appears OpenTable has their own notification system "Notify me". It will be easier to use. I'm not sure their checking frequency.
+
+This bot runs in a tab and checks for availability. Checking frequency can be fine tuned. Once availability appears, it sends a notification via email with the reservation link to the destination address specified.
 
 ## Install
 
