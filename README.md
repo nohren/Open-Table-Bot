@@ -30,6 +30,8 @@ CLIENT_ID=<client id>
 
 ## Set up gmail forwarding
 
+#### Server confirmed to run on node LTS.
+
 #### OAuth2
 
 - login to your google cloud console
