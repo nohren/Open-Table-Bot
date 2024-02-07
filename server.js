@@ -5,10 +5,10 @@
 /**
  * import packages
  */
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-require("dotenv").config();
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -60,12 +60,12 @@ const sendEmail = async (emailOptions) => {
 //server
 const PORT = 8080;
 const app = express();
-// Enable CORS middleware
+
+// Enable middleware
 app.use(cors());
-// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Route handler for POST requests to '/reservation'
+//POST requests to '/reservation'
 app.post("/reservation", (req, res) => {
   const { message, href } = req.body;
   console.log(req.body);

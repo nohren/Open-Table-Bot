@@ -15,8 +15,7 @@
   const maxCheckSeconds = 600000;
 
   let timeoutId;
-  let isBotStarted = false;
-  let isReservation = false;
+  let botRunning = false;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
@@ -46,7 +45,7 @@
     if (clickButton) {
         clickButton.click();
         //wait for api to return, taking 84ms on average
-        await new Promise((res) => setTimeout(res, 2500));
+        await new Promise((res) => setTimeout(res, 2900));
         //check results for reservation
         const slots = document.querySelector("[data-test='time-slots']");
         for (const child of slots.children) {
@@ -54,21 +53,18 @@
             console.log("Reservation found!");
             const message = `Reservation available: ${child.firstChild.ariaLabel}`;
             sendEmail(message, child.firstChild.href);
-            isReservation = true;
-            isBotStarted = false;
-            break;
+            botRunning = false;
+            return;
           }
         }
     } else {
         console.log("no click button, open in a different browser or clear cookies / cache");
-        isBotStarted = false;
+        botRunning = false;
         return;
     }
 
-    if (!isReservation) {
-      console.log("no reservation found, trying again");
-      startCheckingAgain();
-    }
+    console.log("no reservation found, trying again");
+    startCheckingAgain();
   }
 
   //html to start bot on the page you want, once click button, bot goes to work
@@ -80,10 +76,10 @@
   el.style.backgroundColor = "lime";
   el.style.fontWeight = "bold";
   el.addEventListener("click", function () {
-    if (!isBotStarted) {
+    if (!botRunning) {
       console.log("start bot");
       checkForTimeSlots();
-      isBotStarted = true;
+      botRunning = true;
     }
   });
 
