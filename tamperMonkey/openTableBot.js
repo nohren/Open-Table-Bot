@@ -11,8 +11,8 @@
   "use strict";
 
   //check anytime between 30 seconds and 1.5 minutes
-  const minCheckSeconds = 30000;
-  const maxCheckSeconds = 60000 * 1.5;
+  const minCheckSeconds = 20000;
+  const maxCheckSeconds = 60000 * 1.2;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
@@ -41,8 +41,9 @@
 
   //results are within 2.5 hrs of reservation
   async function checkForTimeSlots() {
+    console.log("checking for time slots");
     let result;
-    //wait for XHR to load
+    //wait for XHR / document to load
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const slots = document.querySelector("[data-test='time-slots']");
     for (const child of slots.children) {
@@ -64,6 +65,7 @@
   }
 
   function completeReservation() {
+    console.log("booking page");
     const completeReservationButton = document.querySelector(
       "[data-test='complete-reservation-button']"
     );
@@ -81,10 +83,18 @@
   el.style.fontSize = "xx-large";
   document.body.prepend(el);
 
+  //noticed the userScript is somtimes injected after the page is loaded, and sometimes before.
   if (window.location.pathname === "/booking/details") {
-    console.log("booking page");
-    window.onload = completeReservation;
+    if (document.readyState === "complete") {
+      completeReservation();
+    } else {
+      window.onload = completeReservation;
+    }
   } else {
-    window.onload = checkForTimeSlots;
+    if (document.readyState === "complete") {
+      checkForTimeSlots();
+    } else {
+      window.onload = checkForTimeSlots;
+    }
   }
 })();
