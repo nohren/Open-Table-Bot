@@ -10,42 +10,43 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
-const OAuth2 = google.auth.OAuth2;
+//const { google } = require("googleapis");
+// const OAuth2 = google.auth.OAuth2;
 
 /**
  * define email functions
  */
 
+//Oauth somehow expired, using app password which is less fickle
 const createTransporter = async () => {
-  const oauth2Client = new OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    "https://developers.google.com/oauthplayground"
-  );
+  // const oauth2Client = new OAuth2(
+  //   process.env.CLIENT_ID,
+  //   process.env.CLIENT_SECRET,
+  //   "https://developers.google.com/oauthplayground"
+  // );
 
-  oauth2Client.setCredentials({
-    refresh_token: process.env.REFRESH_TOKEN,
-  });
-
-  const accessToken = await new Promise((resolve, reject) => {
-    oauth2Client.getAccessToken((err, token) => {
-      if (err) {
-        reject();
-      }
-      resolve(token);
-    });
-  });
+  // oauth2Client.setCredentials({
+  //   refresh_token: process.env.REFRESH_TOKEN,
+  // });
+ 
+  // const accessToken = await new Promise((resolve, reject) => {
+  //   oauth2Client.getAccessToken((err, token) => {
+  //     if (err) {
+  //       reject();
+  //     }
+  //     resolve(token);
+  //   });
+  // });
+  // console.log(accessToken)
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
-      type: "OAuth2",
       user: process.env.SENDER_EMAIL,
-      accessToken,
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      refreshToken: process.env.REFRESH_TOKEN,
+      pass: process.env.APP_PASSWORD,
     },
   });
 

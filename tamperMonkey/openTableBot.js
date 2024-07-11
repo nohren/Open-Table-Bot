@@ -4,6 +4,10 @@
 // @version      0.1
 // @description  get your reservation when others cancel
 // @author       Nohren
+// @grant        window.close
+// @grant GM_getValue
+// @grant GM_setValue
+// @grant GM_deleteValue
 // ==/UserScript==
 
 (function () {
@@ -11,9 +15,7 @@
 
   //check anytime between 1 and 10 minutes
   const minCheckSeconds = 60000;
-  const maxCheckSeconds = 600000;
-
-  let botRunning = false;
+  const maxCheckSeconds = 60000 * 10;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
@@ -26,11 +28,13 @@
   }
 
   function startCheckingAgain() {
-    setTimeout(checkForTimeSlots, randomInterval());
+    const randomInterval = randomIntervalFunc();
+    console.log(`reloading in ${randomInverval}`)
+    setTimeout(() => window.location.reload(), randomInterval);
   }
 
   //random check interval to avoid bot detection.
-  function randomInterval() {
+  function randomIntervalFunc() {
     return Math.floor(
       Math.max(minCheckSeconds, Math.random() * maxCheckSeconds)
     );
@@ -38,50 +42,33 @@
 
   //results are within 2.5 hrs of reservation
   async function checkForTimeSlots() {
-    //click button available?
-    const clickButton = document.querySelector("[aria-label='Find a time']");
-    if (clickButton) {
-      clickButton.click();
-      //wait for api to return, taking 84ms on average
-      await new Promise((res) => setTimeout(res, 2900));
-      //check results for reservation
-      const slots = document.querySelector("[data-test='time-slots']");
-      for (const child of slots.children) {
-        if (child.firstChild.ariaLabel) {
-          console.log("Reservation found!");
-          const message = `Reservation available: ${child.firstChild.ariaLabel}`;
-          sendEmail(message, child.firstChild.href);
-          botRunning = false;
-          return;
-        }
+    //wait 5 seconds api data to return, taking 84ms on average
+    await new Promise((res) => setTimeout(res, 5000));
+    //check results for reservation
+    let result;
+    const slots = document.querySelector("[data-test='time-slots']");
+    for (const child of slots.children) {
+      if (child.firstChild.ariaLabel) {
+        result = `Reservation found! - ${new Date()}`
+        const message = `Reservation available at ${child.firstChild.innerText}: ${child.firstChild.ariaLabel}`;
+        sendEmail(message, child.firstChild.href);
       }
-    } else {
-      console.log(
-        "no click button, open in a different browser or clear cookies / cache"
-      );
-      botRunning = false;
-      return;
     }
 
-    console.log("no reservation found, trying again...");
+    // check again in next interval
+    console.log(result ?? `no reservation found - ${new Date()}`)
     startCheckingAgain();
   }
 
-  //html to start bot on the page you want, once click button, bot goes to work
-  const el = document.createElement("button");
-  el.innerText = "Start Bot";
-  el.id = "bot-start";
+  const el = document.createElement("div");
+  el.innerText = "Bot running";
   el.style.position = "relative";
   el.style.width = "15%";
   el.style.backgroundColor = "lime";
   el.style.fontWeight = "bold";
-  el.addEventListener("click", function () {
-    if (!botRunning) {
-      console.log("start bot");
-      checkForTimeSlots();
-      botRunning = true;
-    }
-  });
+  //bot goes to work automatically on the domain
+  //and on page refresh
+  checkForTimeSlots();
 
   document.body.prepend(el);
 })();
