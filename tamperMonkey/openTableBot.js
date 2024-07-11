@@ -10,18 +10,30 @@
 (function () {
   "use strict";
 
-  //check anytime between 30 seconds and 1.5 minutes
   const minCheckSeconds = 20000;
   const maxCheckSeconds = 60000 * 1.2;
 
-  function sendEmail(message, href) {
-    fetch("http://localhost:8080/reservation", {
+  async function sendEmail(message, href) {
+    const options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message, href }),
-    });
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:8080/reservation",
+        options
+      );
+      !response.ok
+        ? console.log("Email send failed")
+        : console.log("Email send success!");
+      const data = await response.json();
+      console.log(data);
+    } catch (e) {
+      console.log("Failed to send data to server", e);
+    }
   }
 
   function startCheckingAgain() {
@@ -32,7 +44,6 @@
     setTimeout(() => window.location.reload(), randomInterval);
   }
 
-  //random check interval to avoid bot detection.
   function randomIntervalFunc() {
     return Math.floor(
       Math.max(minCheckSeconds, Math.random() * maxCheckSeconds)
@@ -43,7 +54,7 @@
   async function checkForTimeSlots() {
     console.log("checking for time slots");
     let result;
-    //wait for XHR / document to load
+    //wait for XHR to load
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const slots = document.querySelector("[data-test='time-slots']");
     for (const child of slots.children) {
@@ -51,6 +62,7 @@
         result = `Reservation found! - ${new Date()}`;
         const message = `Reservation available at ${child.firstChild.innerText}: ${child.firstChild.ariaLabel}`;
         sendEmail(message, child.firstChild.href);
+
         //attempt to reserve via bot
         child.firstChild.click();
       }
@@ -64,8 +76,9 @@
     }
   }
 
-  function completeReservation() {
+  async function completeReservation() {
     console.log("booking page");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const completeReservationButton = document.querySelector(
       "[data-test='complete-reservation-button']"
     );
@@ -83,14 +96,15 @@
   el.style.fontSize = "xx-large";
   document.body.prepend(el);
 
-  //noticed the userScript is somtimes injected after the page is loaded, and sometimes before.
   if (window.location.pathname === "/booking/details") {
+    //somtimes user script is injected after the page is loaded, and sometimes before.
     if (document.readyState === "complete") {
       completeReservation();
     } else {
       window.onload = completeReservation;
     }
   } else {
+    //somtimes user script is injected after the page is loaded, and sometimes before.
     if (document.readyState === "complete") {
       checkForTimeSlots();
     } else {

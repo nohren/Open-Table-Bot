@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "server": "node server.js"
+    "server": "node emailServer.js"
   },
   "keywords": [],
   "author": "",

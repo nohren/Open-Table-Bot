@@ -17,8 +17,9 @@ const nodemailer = require("nodemailer");
  * define email functions
  */
 
-//Oauth somehow expired, using app password which is less fickle
-const createTransporter = async () => {
+//Oauth somehow broke or expired and gathering the useful knobs is also time consuming
+//generating a google account app password is less troublesome and fickle
+const createTransporter = () => {
   // const oauth2Client = new OAuth2(
   //   process.env.CLIENT_ID,
   //   process.env.CLIENT_SECRET,
@@ -28,7 +29,7 @@ const createTransporter = async () => {
   // oauth2Client.setCredentials({
   //   refresh_token: process.env.REFRESH_TOKEN,
   // });
- 
+
   // const accessToken = await new Promise((resolve, reject) => {
   //   oauth2Client.getAccessToken((err, token) => {
   //     if (err) {
@@ -53,16 +54,13 @@ const createTransporter = async () => {
   return transporter;
 };
 
-const sendEmail = async (emailOptions) => {
-  const emailTransporter = await createTransporter();
+const sendEmail = (emailOptions) => {
+  const emailTransporter = createTransporter();
   return emailTransporter.sendMail(emailOptions);
 };
 
-//server
 const PORT = 8080;
 const app = express();
-
-// Enable middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -77,10 +75,14 @@ app.post("/reservation", (req, res) => {
     to: process.env.RECIEVER_EMAIL,
     from: process.env.SENDER_EMAIL,
   })
-    .then((res) => console.log(res))
-    .catch((e) => console.log(e));
-
-  res.send("Data received successfully!");
+    .then((res) => {
+      console.log(res);
+      res.status(200).send(res);
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
 });
 
 app.listen(PORT, () => {
