@@ -1,6 +1,6 @@
 # Open-Table-Bot
 
-A bot that enables last minute OpenTable reservations for hard to get restaurants. A percentage of people will cancel at the last minute. This bot increases the chances those resources will re-allocate to you.
+A bot that enables last minute OpenTable reservations for hard to get restaurants. Last minute cancellations are a statistical inevitability. This bot increases the chances those resources will re-allocate to you.
 
 |               🚀               |                🌟                |
 | :----------------------------: | :------------------------------: |
@@ -12,9 +12,11 @@ A bot that enables last minute OpenTable reservations for hard to get restaurant
 
 ## Overview
 
-\*\* Note - When logging in it appears OpenTable has their own notification system "Notify me". It will be easier to use. I'm not sure their checking frequency.
+\*\* Note - OpenTable has their own notification system "Notify me". You need to log in and register with them. In my experience, I have pulled reservations using this agent without ever being notifyed via their system. I'm not sure their checking frequency, but I know mine.
 
-This bot runs in a tab and checks for availability. Checking frequency can be fine tuned. Once availability appears, it sends a notification via email with the reservation link to the destination address specified.
+This bot runs in a tab and checks for availability. Once it finds availability it will attempt to book. It will also send an email for you to book, in case auto booking fails.
+
+Checking frequency can be fine tuned. Beware of checking < 30 seconds. That seems to get you blocked.
 
 ## Install
 
@@ -25,29 +27,18 @@ This bot runs in a tab and checks for availability. Checking frequency can be fi
 ```
 SENDER_EMAIL=<sender email>
 RECIEVER_EMAIL=<reciever email>
-REFRESH_TOKEN=<refresh token>
-CLIENT_SECRET=<client secret>
-CLIENT_ID=<client id>
+APP_PASSWORD=<google app password>
 ```
 
 ## Set up gmail permissions for sending via server
 
-#### Server confirmed to run on node LTS.
+#### Create a google account app password
 
-#### OAuth2
+- [Create and manage your app passwords](https://myaccount.google.com/apppasswords)
+- name it whatever you want. Make sure to copy the pass phrase and add it to your .env file APP_PASSWORD field.
+- Make sure to add gmails to SENDER_EMAIL and RECIEVER_EMAIL. I just used my gmail for both. I send email to myself.
 
-- login to your google cloud console
-- create a project
-- in credentials select create credentials and select a web client. Make sure `https://developers.google.com/oauthplayground` is set as the authorized redirect uri.
-- Add client id and secret to .env
-- navigate in browser to https://developers.google.com/oauthplayground/
-- In select and authorized scroll down to Gmail API v1, click it and then click the https://mail.google.com/. You should see a check mark appear beside it.
-- click the settings top right button on the page and click use own OAuth credentials.
-- Fill in client and secret and click authorize api's button.
-- in exchange authorization for refresh token, copy the refresh token and paste it into the .env
-- sender email is your email, reciever is wherever you want notification to go.
-
-#### Lower security app
+#### Lower security app (skip this step if above works)
 
 - You can configure your Gmail account to allow less secure apps [here](https://www.google.com/settings/security/lesssecureapps).
   - reference - https://nodemailer.com/usage/using-gmail/
@@ -57,8 +48,7 @@ CLIENT_ID=<client id>
 
 - At the project root, `npm run server`
 - In the browser install tampermonkey extension. You can find it in chrome as an extension.
-- In the project root tampermonkey folder, copy the openTableBot.js script contents and paste it into a new tampermonkey script in the browser extension.
+- Copy the openTableBot.js script code and paste it into a new tampermonkey script located in the browser extension.
 - Navigate to https://www.opentable.com/ and select a date, time and restaurant.
-- Make sure the big red "Find a Time" button is visible. Otherwise clear the cache / cookies until it is.
-- You should see tampermonkey running and a green button in the top left of the browser titled "Start Bot". Click it.
-- You can see it run in the console. Make sure to plug in your laptop and don't let it go to sleep so you can be out and about and get notified via email on your phone for availabilities / cancellations.
+- You should see tampermonkey running and a green Agent running on the top of the page
+- You can see it run in the console. Make sure to plug in your laptop and use your laptop as a server agent while you are out doing other things.

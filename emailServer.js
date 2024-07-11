@@ -10,8 +10,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-//const { google } = require("googleapis");
-// const OAuth2 = google.auth.OAuth2;
 
 /**
  * define email functions
@@ -19,28 +17,8 @@ const nodemailer = require("nodemailer");
 
 //Oauth somehow broke or expired and gathering the useful knobs is also time consuming
 //generating a google account app password is less troublesome and fickle
-const createTransporter = () => {
-  // const oauth2Client = new OAuth2(
-  //   process.env.CLIENT_ID,
-  //   process.env.CLIENT_SECRET,
-  //   "https://developers.google.com/oauthplayground"
-  // );
-
-  // oauth2Client.setCredentials({
-  //   refresh_token: process.env.REFRESH_TOKEN,
-  // });
-
-  // const accessToken = await new Promise((resolve, reject) => {
-  //   oauth2Client.getAccessToken((err, token) => {
-  //     if (err) {
-  //       reject();
-  //     }
-  //     resolve(token);
-  //   });
-  // });
-  // console.log(accessToken)
-
-  const transporter = nodemailer.createTransport({
+const sendEmail = (emailOptions) => {
+  const emailConfig = {
     service: "Gmail",
     host: "smtp.gmail.com",
     port: 465,
@@ -49,13 +27,8 @@ const createTransporter = () => {
       user: process.env.SENDER_EMAIL,
       pass: process.env.APP_PASSWORD,
     },
-  });
-
-  return transporter;
-};
-
-const sendEmail = (emailOptions) => {
-  const emailTransporter = createTransporter();
+  };
+  const emailTransporter = nodemailer.createTransport(emailConfig);
   return emailTransporter.sendMail(emailOptions);
 };
 
