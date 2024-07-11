@@ -5,9 +5,6 @@
 // @description  get your reservation when others cancel
 // @author       Nohren
 // @grant        window.close
-// @grant GM_getValue
-// @grant GM_setValue
-// @grant GM_deleteValue
 // ==/UserScript==
 
 (function () {
@@ -29,7 +26,9 @@
 
   function startCheckingAgain() {
     const randomInterval = randomIntervalFunc();
-    console.log(`checking again in ${(randomInterval/1000/60).toFixed(2)} minutes`)
+    console.log(
+      `checking again in ${(randomInterval / 1000 / 60).toFixed(2)} minutes`
+    );
     setTimeout(() => window.location.reload(), randomInterval);
   }
 
@@ -42,33 +41,50 @@
 
   //results are within 2.5 hrs of reservation
   async function checkForTimeSlots() {
-    //wait 5 seconds api data to return, taking 84ms on average
-    await new Promise((res) => setTimeout(res, 5000));
-    //check results for reservation
     let result;
+    //wait for XHR to load
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const slots = document.querySelector("[data-test='time-slots']");
     for (const child of slots.children) {
       if (child.firstChild.ariaLabel) {
-        result = `Reservation found! - ${new Date()}`
+        result = `Reservation found! - ${new Date()}`;
         const message = `Reservation available at ${child.firstChild.innerText}: ${child.firstChild.ariaLabel}`;
         sendEmail(message, child.firstChild.href);
+        //attempt to reserve via bot
+        child.firstChild.click();
       }
     }
 
-    // check again in next interval
-    console.log(result ?? `no reservation found - ${new Date()}`)
-    startCheckingAgain();
+    console.log(result ?? `no reservation found - ${new Date()}`);
+
+    // check again in next interval if no result
+    if (!result) {
+      startCheckingAgain();
+    }
+  }
+
+  function completeReservation() {
+    const completeReservationButton = document.querySelector(
+      "[data-test='complete-reservation-button']"
+    );
+    if (completeReservationButton) {
+      completeReservationButton.click();
+    }
   }
 
   const el = document.createElement("div");
-  el.innerText = "Bot running";
+  el.innerText = "🤖 Agent Running";
   el.style.position = "relative";
-  el.style.width = "15%";
+  el.style.textAlign = "center";
   el.style.backgroundColor = "lime";
   el.style.fontWeight = "bold";
-  //bot goes to work automatically on the domain
-  //and on page refresh
-  checkForTimeSlots();
-
+  el.style.fontSize = "xx-large";
   document.body.prepend(el);
+
+  if (window.location.pathname === "/booking/details") {
+    console.log("booking page");
+    window.onload = completeReservation;
+  } else {
+    window.onload = checkForTimeSlots;
+  }
 })();
