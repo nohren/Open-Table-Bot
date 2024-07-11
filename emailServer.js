@@ -65,9 +65,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 //POST requests to '/reservation'
-app.post("/reservation", (req, res) => {
-  const { message, href } = req.body;
-  console.log(req.body);
+app.post("/reservation", (request, response) => {
+  const { message, href } = request.body;
 
   sendEmail({
     subject: "Your reservation has availability.  Book at open table now!",
@@ -77,11 +76,11 @@ app.post("/reservation", (req, res) => {
   })
     .then((res) => {
       console.log(res);
-      res.status(200).send(res);
+      response.status(200).send(res);
     })
     .catch((e) => {
       console.log(e);
-      res.status(500).send(e);
+      response.status(500).send(e);
     });
 });
 
