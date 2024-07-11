@@ -13,9 +13,9 @@
 (function () {
   "use strict";
 
-  //check anytime between 1 and 10 minutes
+  //check anytime between 1 and 5 minutes
   const minCheckSeconds = 60000;
-  const maxCheckSeconds = 60000 * 10;
+  const maxCheckSeconds = 60000 * 5;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
@@ -29,7 +29,7 @@
 
   function startCheckingAgain() {
     const randomInterval = randomIntervalFunc();
-    console.log(`reloading in ${randomInverval}`)
+    console.log(`checking again in ${(randomInterval/1000/60).toFixed(2)} minutes`)
     setTimeout(() => window.location.reload(), randomInterval);
   }
 
