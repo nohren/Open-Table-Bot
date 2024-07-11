@@ -13,9 +13,9 @@
 (function () {
   "use strict";
 
-  //check anytime between 1 and 5 minutes
-  const minCheckSeconds = 60000;
-  const maxCheckSeconds = 60000 * 5;
+  //check anytime between 30 seconds and 1.5 minutes
+  const minCheckSeconds = 30000;
+  const maxCheckSeconds = 60000 * 1.5;
 
   function sendEmail(message, href) {
     fetch("http://localhost:8080/reservation", {
