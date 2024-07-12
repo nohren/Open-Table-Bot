@@ -18,7 +18,9 @@ This bot runs in a tab and checks for availability. Once it finds availability i
 
 Checking frequency can be fine tuned. Beware of checking < 30 seconds. That seems to get you blocked.
 
-## Install
+## Set up a local server to send you email notifications via your gmail account
+
+### Install
 
 - clone the repo
 - npm install
@@ -29,8 +31,6 @@ SENDER_EMAIL=<sender email>
 RECIEVER_EMAIL=<reciever email>
 APP_PASSWORD=<google app password>
 ```
-
-## Set up gmail permissions for sending via server
 
 #### Create a google account app password
 
@@ -46,9 +46,12 @@ APP_PASSWORD=<google app password>
 
 ## Running the program
 
-- At the project root, `npm run server`
-- In the browser install tampermonkey extension. You can find it in chrome as an extension.
-- Copy the openTableBot.js script code and paste it into a new tampermonkey script located in the browser extension.
-- Navigate to https://www.opentable.com/ and select a date, time and restaurant.
-- You should see tampermonkey running and a green Agent running on the top of the page
-- You can see it run in the console. Make sure to plug in your laptop and use your laptop as a server agent while you are out doing other things.
+- To the run the mail server, at the project root, `npm run server`
+- In the browser install tampermonkey extension. You can find it in chrome extensions.
+- Copy the openTableBot.js script code and paste it into a new tampermonkey script in the extension.
+- Navigate to https://www.opentable.com/
+- Log into your account
+- Select a date, time and restaurant. Click search.
+- You should be directed to the restaurants open table page for the desired time / date and see the "Agent running" in green at the top of the page. This is the page that it works on!
+- You can right click on the page and click inspect. In the console, you can see it running.
+- Make sure to plug in your laptop and not let it go to sleep so you can go out and do other things.
