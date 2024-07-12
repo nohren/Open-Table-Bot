@@ -10,8 +10,8 @@
 (function () {
   "use strict";
 
-  const minCheckSeconds = 20000;
-  const maxCheckSeconds = 60000 * 1.2;
+  const minCheckTime = 20000;
+  const maxCheckTime = 60000 * 1.2;
 
   async function sendEmail(message, href) {
     const options = {
@@ -45,9 +45,7 @@
   }
 
   function randomIntervalFunc() {
-    return Math.floor(
-      Math.max(minCheckSeconds, Math.random() * maxCheckSeconds)
-    );
+    return Math.floor(Math.max(minCheckTime, Math.random() * maxCheckTime));
   }
 
   //results are within 2.5 hrs of reservation
