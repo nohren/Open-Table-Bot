@@ -86,27 +86,35 @@
   }
 
   const el = document.createElement("div");
-  el.innerText = "🤖 Agent Running";
-  el.style.position = "relative";
-  el.style.textAlign = "center";
-  el.style.backgroundColor = "lime";
-  el.style.fontWeight = "bold";
-  el.style.fontSize = "xx-large";
-  document.body.prepend(el);
 
+  //attempt to book on booking page
   if (window.location.pathname === "/booking/details") {
+    el.innerText = "🤖 Agent Running";
+    el.style.backgroundColor = "lime";
     //somtimes user script is injected after the page is loaded, and sometimes before.
     if (document.readyState === "complete") {
       completeReservation();
     } else {
       window.onload = completeReservation;
     }
-  } else {
-    //somtimes user script is injected after the page is loaded, and sometimes before.
+    // restaurant page
+  } else if (document.querySelector("[data-test='restaurant-profile-photo']")) {
+    el.innerText = "🤖 Agent Running";
+    el.style.backgroundColor = "lime";
+    //sometimes user script is injected after the page is loaded, and sometimes before.
     if (document.readyState === "complete") {
       checkForTimeSlots();
     } else {
       window.onload = checkForTimeSlots;
     }
+  } else {
+    el.innerText = "🤖 Agent Armed";
+    el.style.backgroundColor = "yellow";
+    //not a booking or restaurant page
   }
+  el.style.position = "relative";
+  el.style.textAlign = "center";
+  el.style.fontWeight = "bold";
+  el.style.fontSize = "xx-large";
+  document.body.prepend(el);
 })();
