@@ -76,7 +76,7 @@
 
   async function completeReservation() {
     console.log("booking page");
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     const completeReservationButton = document.querySelector(
       "[data-test='complete-reservation-button']"
     );
