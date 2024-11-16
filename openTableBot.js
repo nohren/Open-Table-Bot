@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         OpenTableBot
 // @match        https://www.opentable.com/*
+// @match        https://cdn.otstatic.com/maintenance/busy/index.html
 // @version      0.1
 // @description  get your reservation when others cancel
 // @author       Nohren
@@ -86,6 +87,14 @@
   }
 
   const el = document.createElement("div");
+
+  //got kicked out
+  if (window.location.pathname === "/maintenance/busy/index.html") {
+    console.log('got kicked out. Will try again in 20 min')
+    setTimeout(() => {
+      window.history.back()
+    }, 1000 * 60 * 20)
+  }
 
   //attempt to book on booking page
   if (window.location.pathname === "/booking/details") {
