@@ -6,6 +6,8 @@
 // @description  get your reservation when others cancel
 // @author       Nohren
 // @grant        window.close
+// @grant        GM_setValue
+// @grant        GM_getValue
 // ==/UserScript==
 
 (function () {
@@ -90,9 +92,11 @@
 
   //got kicked out
   if (window.location.pathname === "/maintenance/busy/index.html") {
+    const url = GM_getValue("url", null);
     console.log('got kicked out. Will try again in 20 min')
+    console.log(url)
     setTimeout(() => {
-      window.history.back()
+      window.location.assign(url)
     }, 1000 * 60 * 20)
   }
 
@@ -110,7 +114,7 @@
   } else if (document.querySelector("[data-test='restaurant-profile-photo']")) {
     el.innerText = "🤖 Agent Running";
     el.style.backgroundColor = "lime";
-    //sometimes user script is injected after the page is loaded, and sometimes before.
+    GM_setValue("url", window.location.href);
     if (document.readyState === "complete") {
       checkForTimeSlots();
     } else {
@@ -119,7 +123,6 @@
   } else {
     el.innerText = "🤖 Agent Armed";
     el.style.backgroundColor = "yellow";
-    //not a booking or restaurant page
   }
   el.style.position = "relative";
   el.style.textAlign = "center";
