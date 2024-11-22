@@ -6,15 +6,15 @@
 // @description  get your reservation when others cancel
 // @author       Nohren
 // @grant        window.close
-// @grant        GM_setValue
-// @grant        GM_getValue
+// @grant        GM.setValue
+// @grant        GM.getValue
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  const minCheckTime = 20000;
-  const maxCheckTime = 60000 * 1.2;
+  const minCheckTime = 30000;
+  const maxCheckTime = 60000 * 1.6;
 
   async function sendEmail(message, href) {
     const options = {
@@ -58,7 +58,7 @@
     //wait for XHR to load
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const slots = document.querySelector("[data-test='time-slots']");
-    for (const child of slots.children) {
+    for (const child of slots?.children ?? []) {
       if (child.firstChild.ariaLabel) {
         result = `Reservation found! - ${new Date()}`;
         const message = `Reservation available at ${child.firstChild.innerText}: ${child.firstChild.ariaLabel}`;
@@ -73,7 +73,11 @@
 
     // check again in next interval if no result
     if (!result) {
-      startCheckingAgain();
+       try {
+        startCheckingAgain();
+       } catch (error) {
+        console.error("Error while restarting the check:", error);
+       }
     }
   }
 
@@ -88,45 +92,54 @@
     }
   }
 
-  const el = document.createElement("div");
-
-  //got kicked out
-  if (window.location.pathname === "/maintenance/busy/index.html") {
-    const url = GM_getValue("url", null);
-    console.log('got kicked out. Will try again in 20 min')
+ async function kickedOut() {
+    const url = await GM.getValue("url", null);
+    console.log('got kicked out. Will try again in 5 min')
     console.log(url)
     setTimeout(() => {
       window.location.assign(url)
-    }, 1000 * 60 * 20)
-  }
+    }, 1000 * 60 * 5)
+ }
 
-  //attempt to book on booking page
-  if (window.location.pathname === "/booking/details") {
-    el.innerText = "🤖 Agent Running";
-    el.style.backgroundColor = "lime";
-    //somtimes user script is injected after the page is loaded, and sometimes before.
-    if (document.readyState === "complete") {
-      completeReservation();
-    } else {
-      window.onload = completeReservation;
-    }
-    // restaurant page
-  } else if (document.querySelector("[data-test='restaurant-profile-photo']")) {
-    el.innerText = "🤖 Agent Running";
-    el.style.backgroundColor = "lime";
-    GM_setValue("url", window.location.href);
-    if (document.readyState === "complete") {
-      checkForTimeSlots();
-    } else {
-      window.onload = checkForTimeSlots;
-    }
-  } else {
-    el.innerText = "🤖 Agent Armed";
-    el.style.backgroundColor = "yellow";
-  }
+ function execute(func) {
+     //somtimes user script is injected after the page is loaded, and sometimes before.
+     if (document.readyState === "complete") {
+          func();
+     } else {
+          window.onload = func;
+     }
+ }
+
+  const el = document.createElement("div");
   el.style.position = "relative";
   el.style.textAlign = "center";
   el.style.fontWeight = "bold";
   el.style.fontSize = "xx-large";
+  el.innerText = "🤖 Agent Running";
+  el.style.backgroundColor = "lime";
+
+  if (document.querySelector("[data-test='restaurant-profile-photo']") || document.querySelector("[data-test='icBell']")) {
+    const url = window.location.href
+    GM.setValue("url", url);
+    console.log(`set url as ${url}`)
+    execute(checkForTimeSlots)
+    document.body.prepend(el);
+    return
+  }
+
+  switch (window.location.pathname) {
+    case "/maintenance/busy/index.html":
+          console.log('kicked out');
+          execute(kickedOut)
+          break
+    case "/booking/details":
+          execute(completeReservation)
+          break
+    default:
+      console.log('default case');
+      el.innerText = "🤖 Armed";
+      el.style.backgroundColor = "yellow";
+  }
+
   document.body.prepend(el);
 })();
