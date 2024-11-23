@@ -8,13 +8,14 @@
 // @grant        window.close
 // @grant        GM.setValue
 // @grant        GM.getValue
+// @run-at       document-end
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  const minCheckTime = 30000;
-  const maxCheckTime = 60000 * 1.6;
+  const minCheckTime = 45000;
+  const maxCheckTime = 60000 * 3;
 
   async function sendEmail(message, href) {
     const options = {
@@ -103,10 +104,10 @@
 
  function execute(func) {
      //somtimes user script is injected after the page is loaded, and sometimes before.
-     if (document.readyState === "complete") {
-          func();
+     if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", func);
      } else {
-          window.onload = func;
+          func();
      }
  }
 
@@ -118,21 +119,17 @@
   el.innerText = "🤖 Agent Running";
   el.style.backgroundColor = "lime";
 
-  if (document.querySelector("[data-test='restaurant-profile-photo']") || document.querySelector("[data-test='icBell']")) {
-    const url = window.location.href
-    GM.setValue("url", url);
-    console.log(`set url as ${url}`)
-    execute(checkForTimeSlots)
-    document.body.prepend(el);
-    return
-  }
-
-  switch (window.location.pathname) {
-    case "/maintenance/busy/index.html":
+  switch (true) {
+      case /\/r\/[a-zA-Z0-9-]+/.test(window.location.pathname):
+          GM.setValue("url", window.location.href);
+          console.log(`set url as ${window.location.href}`)
+          execute(checkForTimeSlots)
+          break
+      case window.location.pathname === "/maintenance/busy/index.html":
           console.log('kicked out');
           execute(kickedOut)
           break
-    case "/booking/details":
+      case window.location.pathname === "/booking/details":
           execute(completeReservation)
           break
     default:
