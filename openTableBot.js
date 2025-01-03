@@ -15,7 +15,7 @@
   "use strict";
 
   const minCheckTime = 45000;
-  const maxCheckTime = 60000 * 3;
+  const maxCheckTime = 60000 * 2.0;
 
   async function sendEmail(message, href) {
     const options = {
@@ -40,10 +40,17 @@
     }
   }
 
+   function minAndSec(ms) {
+     const val = ms / 1000 / 60
+     const min = Math.floor(val)
+     const sec = Math.round((val - min) * 60)
+     return `${min} min and ${sec} seconds`
+  }
+
   function startCheckingAgain() {
     const randomInterval = randomIntervalFunc();
     console.log(
-      `checking again in ${(randomInterval / 1000 / 60).toFixed(2)} minutes`
+      `checking again in ${minAndSec(randomInterval)}`
     );
     setTimeout(() => window.location.reload(), randomInterval);
   }
