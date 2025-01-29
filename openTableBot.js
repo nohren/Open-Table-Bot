@@ -15,7 +15,7 @@
   "use strict";
 
   const minCheckTime = 45000;
-  const maxCheckTime = 60000 * 2.0;
+  const maxCheckTime = 60000 * 2;
 
   async function sendEmail(message, href) {
     const options = {
@@ -100,13 +100,18 @@
     }
   }
 
- async function kickedOut() {
+ async function kickedOut(wait) {
     const url = await GM.getValue("url", null);
-    console.log('got kicked out. Will try again in 5 min')
+    if (!url) {
+        console.log(`no url to back to ${url}`);
+        sendEmail('Got kicked out, no url to go back to!', window.location.href)
+        return
+    }
+    console.log(`got kicked out. Will try again in ${minAndSec(wait)}`)
     console.log(url)
     setTimeout(() => {
       window.location.assign(url)
-    }, 1000 * 60 * 5)
+    }, wait ?? 1000 * 60 * 5)
  }
 
  function execute(func) {
@@ -127,7 +132,7 @@
   el.style.backgroundColor = "lime";
 
   switch (true) {
-      case /\/r\/[a-zA-Z0-9-]+/.test(window.location.pathname):
+      case /\/r\/[a-zA-Z0-9-]+/.test(window.location.pathname) || !!document.querySelector("[data-testid='restaurant-banner-content-container']"):
           GM.setValue("url", window.location.href);
           console.log(`set url as ${window.location.href}`)
           execute(checkForTimeSlots)
@@ -136,13 +141,13 @@
           console.log('kicked out');
           execute(kickedOut)
           break
-      case window.location.pathname === "/booking/details":
+      case window.location.pathname === "/booking/details": 
           execute(completeReservation)
           break
-    default:
-      console.log('default case');
-      el.innerText = "🤖 Armed";
-      el.style.backgroundColor = "yellow";
+      default:
+        console.log('default case');
+        el.innerText = "🤖 Armed";
+        el.style.backgroundColor = "yellow";
   }
 
   document.body.prepend(el);
